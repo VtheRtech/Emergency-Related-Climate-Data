@@ -11,5 +11,3 @@ the top three events are severe storm hurricane and flood, followed by biologica
 ![image](https://user-images.githubusercontent.com/30744769/217320571-f8d6dc23-873e-4a71-b8a9-ad5fc2cfc230.png)
 
 Further analysis will be done to analysis the different facets of this graph. 
-# Emergency-Related-Climate-Data
-# Emergency-Related-Climate-Data
