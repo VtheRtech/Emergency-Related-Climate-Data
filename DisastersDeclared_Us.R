@@ -87,3 +87,20 @@ annual_disasters %>%
 
 
 summary(lm(DisasterCount ~ Year, data = annual_disasters))
+
+
+# Plot the data points
+plot(annual_disasters$Year, annual_disasters$DisasterCount,
+  xlab = "Year", ylab = "Disaster Count",
+  main = "Disaster Count Over Years"
+)
+# Add the linear model regression line
+abline(model_simple, col = "red")
+
+
+library(knitr)
+library(highr)
+library(evaluate)
+library(xfun)
+setwd("~/Lab5")
+knit("declaration.Rnw")

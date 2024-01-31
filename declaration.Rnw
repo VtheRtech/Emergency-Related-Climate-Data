@@ -1,0 +1,154 @@
+
+\documentclass[11pt]{article}
+
+% Packages for graphics & layout
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage[a4paper,margin=0.5in]{geometry}
+\usepackage{lipsum}
+\usepackage{multicol}
+
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+
+% Packages for math
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+% Package for bibliography
+\usepackage{natbib}
+\usepackage{hyperref}
+
+% listing setup \usepackage{listings}
+\usepackage{color} % For syntax highlighting color
+\captionsetup{labelfont=bf}
+\setlength{\parskip}{0.5\baselineskip}
+
+
+\title{\textbf{Data Analysis Practice}}
+\author{Michael V Cumbo}
+\date{\today}
+
+\begin{document}
+\maketitle
+<<q1, echo=TRUE, message=FALSE>>=
+library(tidyverse)
+library(lubridate)
+library(RSQLite)
+library(DBI)
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(GGally)
+library(stringr)
+library(magrittr)
+
+setwd("~/workbook")
+con <- dbConnect(RSQLite::SQLite(), "Disaster_Data.db")
+dbListTables(con)
+declarations_2023 <- as_tibble(dbGetQuery(
+  con,
+  "SELECT
+  disasterNumber,
+  state,
+  declarationType,
+  incidentType,
+  declarationDate
+  FROM US_Declarations_2023
+ORDER BY declarationDate;"
+))
+dbDisconnect(con)
+
+<<q2, echo=FALSE, message=FALSE>>=
+
+
+# Assuming your data is stored in a tibble named 'declarations_2023'
+# Convert declarationDate to POSIXct format
+declarations_2023 <- declarations_2023 %>%
+  mutate(
+    declarationDateTime = ymd_hms(declarationDate),
+    Date = as.Date(declarationDateTime),
+    Time = format(declarationDateTime, "%H:%M:%S")
+  ) %>%
+  select(-declarationDateTime)
+declarations_2023$Year <- year(declarations_2023$Date)
+declarations_2023$Month <- month(declarations_2023$Date)
+declarations_2023$Day <- day(declarations_2023$Date)
+
+<<q3, echo=TRUE,message=FALSE>>=
+
+
+annual_disasters <- declarations_2023 %>%
+  filter(!Year %in% c(2020, 2005, 2024),
+         declarations_2023$incidentType != "Biological") %>%
+  group_by(Year) %>%
+  summarise(DisasterCount = n())
+# Replace 'DisasterCount' with the actual column name
+
+# Rotate and adjust the size of x-axis labels
+model_simple <- lm(DisasterCount ~ Year, data = annual_disasters)
+future_years <- tibble(Year = c(
+  2024, 2025, 2026, 2027, 2028,
+  2029, 2030, 2031, 2032, 2033, 2034, 2035
+))
+predict(model_simple, future_years) %>% round(1)
+
+annual_disasters %>%
+  lm(DisasterCount ~ Year, data = .) %>%
+  predict(future_years) %>%
+  round(2)
+
+
+summary(lm(DisasterCount ~ Year, data = annual_disasters))
+# Plot the data points
+plot(annual_disasters$Year, annual_disasters$DisasterCount,
+  xlab = "Year", ylab = "Disaster Count",
+  main = "Disaster Count Over Years"
+)
+# Add the linear model regression line
+abline(model_simple, col = "red")
+@
+
+\section*{Prediction Outputs}
+Two different methods were used to predict future \textit{DisasterCount} values for the years 2024 to 2035 using a linear model. The results of both methods are closely aligned, with minor variations likely due to rounding procedures:
+
+\begin{enumerate}
+    \item \textbf{First Method (Rounded to 1 Decimal Place):} Predicted values range from 1654.9 to 1931.3 disasters for the years 2024 to 2035.
+    \item \textbf{Second Method (Rounded to 2 Decimal Places):} Predicted values range from 1654.88 to 1931.32 disasters for the same period.
+\end{enumerate}
+
+These predictions indicate an upward trend in \textit{DisasterCount} over the years.
+
+\section*{Model Summary}
+The summary of the linear model offers key insights:
+
+\subsection*{Coefficients:}
+\begin{itemize}
+    \item The intercept is $-49209.962$, implying the model's prediction for \textit{DisasterCount} when \textit{Year} is 0, which is not applicable in this context.
+    \item The slope coefficient for \textit{Year} is $25.131$. This indicates an annual increase of approximately 25.131 in \textit{DisasterCount}, as per the model.
+\end{itemize}
+
+\subsection*{Statistical Significance:}
+Both the intercept and the slope demonstrate statistical significance with a p-value $< 0.001$.
+
+\subsection*{Model Fit:}
+\begin{itemize}
+    \item The R-squared value is $0.6156$, signifying that approximately 61.56\% of the variability in \textit{DisasterCount} is explained by the year. However, a significant portion of variability remains unexplained.
+    \item The Residual Standard Error (RSE) is $409.4$, indicating the average deviation of data points from the fitted line.
+\end{itemize}
+
+\subsection*{Residuals:}
+The residuals range from $-714.57$ to $1361.83$, suggesting variability around the regression line.
+
+\section*{Interpretation and Considerations}
+\begin{itemize}
+    \item The model indicates a significant upward trend in disaster counts over the years.
+    \item The presence of significant residuals and a R-squared value of $0.6156$ implies that, while there is a discernible trend, other unaccounted factors might also be influencing \textit{DisasterCount}.
+    \item Predictions for future years should be approached with caution due to the simplicity of the model and its exclusion of other potential predictive factors.
+    \item When interpreting these results and making future decisions, the limitations of a simple linear regression model and the impact of external factors not included in the model should be considered.
+\end{itemize}
+\end{document}
