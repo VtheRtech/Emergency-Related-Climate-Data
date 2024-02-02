@@ -47,12 +47,16 @@ colnames(declarations_2023)
 
 
 annual_disasters <- declarations_2023 %>%
-  filter(!Year %in% c(2020, 2005, 2024)) %>%
+  filter(
+    !Year %in% c(2020, 2005, 2024),
+    declarations_2023$incidentType != "Biological"
+  ) %>%
   group_by(Year) %>%
   summarise(DisasterCount = n())
 # Replace 'DisasterCount' with the actual column name
 
 annual_disasters %>%
+  filter(DisasterCount < 3000) %>%
   ggplot(aes(x = Year, y = DisasterCount)) +
   geom_point(color = "#00BFC4", size = 1.2) +
   scale_x_continuous(breaks = unique(annual_disasters$Year)) +
@@ -84,8 +88,6 @@ annual_disasters %>%
   lm(DisasterCount ~ Year, data = .) %>%
   predict(future_years) %>%
   round(2)
-
-
 summary(lm(DisasterCount ~ Year, data = annual_disasters))
 
 
@@ -98,9 +100,9 @@ plot(annual_disasters$Year, annual_disasters$DisasterCount,
 abline(model_simple, col = "red")
 
 
-library(knitr)
-library(highr)
-library(evaluate)
-library(xfun)
-setwd("~/Lab5")
-knit("declaration.Rnw")
+# library(knitr)
+# library(highr)
+# library(evaluate)
+# library(xfun)
+# setwd("~/Lab5")
+# knit("declaration.Rnw")

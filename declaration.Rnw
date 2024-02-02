@@ -35,6 +35,12 @@
 
 \begin{document}
 \maketitle
+\section{About this Data}
+\begin{center}
+\indent\parbox{15cm}{
+  Disaster Declarations Summaries is a summarized dataset describing all federally declared disasters. This dataset lists all official FEMA Disaster Declarations, beginning with the first disaster declaration in 1953 and features all three disaster declaration types: major disaster, emergency, and fire management assistance. The dataset includes declared recovery programs and geographic areas (county not available before 1964; Fire Management records are considered partial due to historical nature of the dataset).
+}
+\end{center}
 <<q1, echo=TRUE, message=FALSE>>=
 library(tidyverse)
 library(lubridate)
@@ -62,8 +68,7 @@ declarations_2023 <- as_tibble(dbGetQuery(
 ORDER BY declarationDate;"
 ))
 dbDisconnect(con)
-
-<<q2, echo=FALSE, message=FALSE>>=
+<<column edits, echo=FALSE, message=FALSE>>=
 
 
 # Assuming your data is stored in a tibble named 'declarations_2023'
@@ -78,10 +83,36 @@ declarations_2023 <- declarations_2023 %>%
 declarations_2023$Year <- year(declarations_2023$Date)
 declarations_2023$Month <- month(declarations_2023$Date)
 declarations_2023$Day <- day(declarations_2023$Date)
+@
 
-<<q3, echo=TRUE,message=FALSE>>=
+\begin{figure}[h!]
+\centering
+  \begin{minipage}{.8\linewidth}
+<<histogram disasters, echo=TRUE, message=FALSE>>=
+# build an arrangment paired with mutaute in
+# DPLYR library than pass it to ggplot and build the graph
+# this reorders the factors in the
+# graph so its easier to break down and look at
+ v1 <- declarations_2023 %>%
+  select("state", "incidentType", "Year") %>%
+  group_by(incidentType) %>%
+  summarise(n = n()) %>%
+  arrange(n) %>%
+  mutate(incidentType = factor(incidentType, levels = unique(incidentType))) %>%
+  ggplot(aes(x = incidentType, y = n)) +
+  geom_col() +
+  theme_gray() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5))
+print(v1)
+@
 
+  \caption{histogram of the total number of disasters declared by the United States} 
+  \label{figure:1}
+  \end{minipage}
+\end{figure}
 
+\clearpage
+<<q3, echo=FALSE,message=FALSE>>=
 annual_disasters <- declarations_2023 %>%
   filter(!Year %in% c(2020, 2005, 2024),
          declarations_2023$incidentType != "Biological") %>%
@@ -95,15 +126,18 @@ future_years <- tibble(Year = c(
   2024, 2025, 2026, 2027, 2028,
   2029, 2030, 2031, 2032, 2033, 2034, 2035
 ))
-predict(model_simple, future_years) %>% round(1)
-
 annual_disasters %>%
   lm(DisasterCount ~ Year, data = .) %>%
   predict(future_years) %>%
   round(2)
 
-
 summary(lm(DisasterCount ~ Year, data = annual_disasters))
+@
+
+\begin{figure}[h!]
+\centering
+  \begin{minipage}{.8\linewidth}
+<<plot data points, echo=FALSE,message=FALSE>>=
 # Plot the data points
 plot(annual_disasters$Year, annual_disasters$DisasterCount,
   xlab = "Year", ylab = "Disaster Count",
@@ -112,16 +146,9 @@ plot(annual_disasters$Year, annual_disasters$DisasterCount,
 # Add the linear model regression line
 abline(model_simple, col = "red")
 @
-
-\section*{Prediction Outputs}
-Two different methods were used to predict future \textit{DisasterCount} values for the years 2024 to 2035 using a linear model. The results of both methods are closely aligned, with minor variations likely due to rounding procedures:
-
-\begin{enumerate}
-    \item \textbf{First Method (Rounded to 1 Decimal Place):} Predicted values range from 1654.9 to 1931.3 disasters for the years 2024 to 2035.
-    \item \textbf{Second Method (Rounded to 2 Decimal Places):} Predicted values range from 1654.88 to 1931.32 disasters for the same period.
-\end{enumerate}
-
-These predictions indicate an upward trend in \textit{DisasterCount} over the years.
+  \label{figure:2}
+  \end{minipage}
+\end{figure}
 
 \section*{Model Summary}
 The summary of the linear model offers key insights:
@@ -130,6 +157,7 @@ The summary of the linear model offers key insights:
 \begin{itemize}
     \item The intercept is $-49209.962$, implying the model's prediction for \textit{DisasterCount} when \textit{Year} is 0, which is not applicable in this context.
     \item The slope coefficient for \textit{Year} is $25.131$. This indicates an annual increase of approximately 25.131 in \textit{DisasterCount}, as per the model.
+    \item These predictions indicate an upward trend in \textit{DisasterCount} over the years.
 \end{itemize}
 
 \subsection*{Statistical Significance:}

@@ -61,7 +61,6 @@
 \usepackage{lipsum}
 \usepackage{multicol}
 
-\usepackage{indentfirst}
 \usepackage[utf8]{inputenc}
 \usepackage{enumitem}
 
@@ -131,46 +130,46 @@ ORDER BY declarationDate;"}
 \end{kframe}
 \end{knitrout}
 
+
+\begin{figure}[h!]
+\centering
+  \begin{minipage}{.8\linewidth}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{annual_disasters} \hlkwb{<-} \hlstd{declarations_2023} \hlopt{%>%}
-  \hlkwd{filter}\hlstd{(}\hlopt{!}\hlstd{Year} \hlopt{%in%} \hlkwd{c}\hlstd{(}\hlnum{2020}\hlstd{,} \hlnum{2005}\hlstd{,} \hlnum{2024}\hlstd{),}
-         \hlstd{declarations_2023}\hlopt{$}\hlstd{incidentType} \hlopt{!=} \hlstr{"Biological"}\hlstd{)} \hlopt{%>%}
-  \hlkwd{group_by}\hlstd{(Year)} \hlopt{%>%}
-  \hlkwd{summarise}\hlstd{(}\hlkwc{DisasterCount} \hlstd{=} \hlkwd{n}\hlstd{())}
-\hlcom{# Replace 'DisasterCount' with the actual column name}
+\hlcom{# build an arrangment paired with mutaute in}
+\hlcom{# DPLYR library than pass it to ggplot and build the graph}
+\hlcom{# this reorders the factors in the}
+\hlcom{# graph so its easier to break down and look at}
+ \hlstd{v1} \hlkwb{<-} \hlstd{declarations_2023} \hlopt{%>%}
+  \hlkwd{select}\hlstd{(}\hlstr{"state"}\hlstd{,} \hlstr{"incidentType"}\hlstd{,} \hlstr{"Year"}\hlstd{)} \hlopt{%>%}
+  \hlkwd{group_by}\hlstd{(incidentType)} \hlopt{%>%}
+  \hlkwd{summarise}\hlstd{(}\hlkwc{n} \hlstd{=} \hlkwd{n}\hlstd{())} \hlopt{%>%}
+  \hlkwd{arrange}\hlstd{(n)} \hlopt{%>%}
+  \hlkwd{mutate}\hlstd{(}\hlkwc{incidentType} \hlstd{=} \hlkwd{factor}\hlstd{(incidentType,} \hlkwc{levels} \hlstd{=} \hlkwd{unique}\hlstd{(incidentType)))} \hlopt{%>%}
+  \hlkwd{ggplot}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x} \hlstd{= incidentType,} \hlkwc{y} \hlstd{= n))} \hlopt{+}
+  \hlkwd{geom_col}\hlstd{()} \hlopt{+}
+  \hlkwd{theme_gray}\hlstd{()} \hlopt{+}
+  \hlkwd{theme}\hlstd{(}\hlkwc{axis.text.x} \hlstd{=} \hlkwd{element_text}\hlstd{(}\hlkwc{angle} \hlstd{=} \hlnum{45}\hlstd{,} \hlkwc{vjust} \hlstd{=} \hlnum{0.5}\hlstd{,} \hlkwc{hjust} \hlstd{=} \hlnum{0.5}\hlstd{))}
+\hlkwd{print}\hlstd{(v1)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/histogram_disasters-1} 
+\end{knitrout}
 
-\hlcom{# Rotate and adjust the size of x-axis labels}
-\hlstd{model_simple} \hlkwb{<-} \hlkwd{lm}\hlstd{(DisasterCount} \hlopt{~} \hlstd{Year,} \hlkwc{data} \hlstd{= annual_disasters)}
-\hlstd{future_years} \hlkwb{<-} \hlkwd{tibble}\hlstd{(}\hlkwc{Year} \hlstd{=} \hlkwd{c}\hlstd{(}
-  \hlnum{2024}\hlstd{,} \hlnum{2025}\hlstd{,} \hlnum{2026}\hlstd{,} \hlnum{2027}\hlstd{,} \hlnum{2028}\hlstd{,}
-  \hlnum{2029}\hlstd{,} \hlnum{2030}\hlstd{,} \hlnum{2031}\hlstd{,} \hlnum{2032}\hlstd{,} \hlnum{2033}\hlstd{,} \hlnum{2034}\hlstd{,} \hlnum{2035}
-\hlstd{))}
-\hlkwd{predict}\hlstd{(model_simple, future_years)} \hlopt{%>%} \hlkwd{round}\hlstd{(}\hlnum{1}\hlstd{)}
-\end{alltt}
+  \caption{histogram of the total number of disasters declared by the United States} 
+  \label{figure:1}
+  \end{minipage}
+\end{figure}
+
+\clearpage
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{verbatim}
-##      1      2      3      4      5      6      7      8      9     10 
-## 1654.9 1680.0 1705.1 1730.3 1755.4 1780.5 1805.7 1830.8 1855.9 1881.1 
-##     11     12 
-## 1906.2 1931.3
-\end{verbatim}
-\begin{alltt}
-\hlstd{annual_disasters} \hlopt{%>%}
-  \hlkwd{lm}\hlstd{(DisasterCount} \hlopt{~} \hlstd{Year,} \hlkwc{data} \hlstd{= .)} \hlopt{%>%}
-  \hlkwd{predict}\hlstd{(future_years)} \hlopt{%>%}
-  \hlkwd{round}\hlstd{(}\hlnum{2}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-##       1       2       3       4       5       6       7       8       9 
-## 1654.88 1680.01 1705.14 1730.27 1755.40 1780.53 1805.66 1830.79 1855.92 
-##      10      11      12 
-## 1881.05 1906.18 1931.32
-\end{verbatim}
-\begin{alltt}
-\hlkwd{summary}\hlstd{(}\hlkwd{lm}\hlstd{(DisasterCount} \hlopt{~} \hlstd{Year,} \hlkwc{data} \hlstd{= annual_disasters))}
-\end{alltt}
-\begin{verbatim}
+##       1       2       3       4       5       6       7       8 
+## 1654.88 1680.01 1705.14 1730.27 1755.40 1780.53 1805.66 1830.79 
+##       9      10      11      12 
+## 1855.92 1881.05 1906.18 1931.32
 ## 
 ## Call:
 ## lm(formula = DisasterCount ~ Year, data = annual_disasters)
@@ -190,28 +189,19 @@ ORDER BY declarationDate;"}
 ## Multiple R-squared:  0.6156,	Adjusted R-squared:  0.6098 
 ## F-statistic: 107.3 on 1 and 67 DF,  p-value: 1.514e-15
 \end{verbatim}
-\begin{alltt}
-\hlcom{# Plot the data points}
-\hlkwd{plot}\hlstd{(annual_disasters}\hlopt{$}\hlstd{Year, annual_disasters}\hlopt{$}\hlstd{DisasterCount,}
-  \hlkwc{xlab} \hlstd{=} \hlstr{"Year"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Disaster Count"}\hlstd{,}
-  \hlkwc{main} \hlstd{=} \hlstr{"Disaster Count Over Years"}
-\hlstd{)}
-\hlcom{# Add the linear model regression line}
-\hlkwd{abline}\hlstd{(model_simple,} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
-\end{alltt}
 \end{kframe}
-\includegraphics[width=\maxwidth]{figure/q3-1} 
 \end{knitrout}
 
-\section*{Prediction Outputs}
-Two different methods were used to predict future \textit{DisasterCount} values for the years 2024 to 2035 using a linear model. The results of both methods are closely aligned, with minor variations likely due to rounding procedures:
-
-\begin{enumerate}
-    \item \textbf{First Method (Rounded to 1 Decimal Place):} Predicted values range from 1654.9 to 1931.3 disasters for the years 2024 to 2035.
-    \item \textbf{Second Method (Rounded to 2 Decimal Places):} Predicted values range from 1654.88 to 1931.32 disasters for the same period.
-\end{enumerate}
-
-These predictions indicate an upward trend in \textit{DisasterCount} over the years.
+\begin{figure}[h!]
+\centering
+  \begin{minipage}{.8\linewidth}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/plot_data_points-1} 
+\end{knitrout}
+  \label{figure:2}
+  \end{minipage}
+\end{figure}
 
 \section*{Model Summary}
 The summary of the linear model offers key insights:
@@ -220,6 +210,7 @@ The summary of the linear model offers key insights:
 \begin{itemize}
     \item The intercept is $-49209.962$, implying the model's prediction for \textit{DisasterCount} when \textit{Year} is 0, which is not applicable in this context.
     \item The slope coefficient for \textit{Year} is $25.131$. This indicates an annual increase of approximately 25.131 in \textit{DisasterCount}, as per the model.
+    \item These predictions indicate an upward trend in \textit{DisasterCount} over the years.
 \end{itemize}
 
 \subsection*{Statistical Significance:}
