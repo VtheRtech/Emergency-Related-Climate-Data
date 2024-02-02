@@ -1,5 +1,5 @@
 
-\documentclass[11pt]{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
+\documentclass[12pt]{report}\usepackage[]{graphicx}\usepackage[]{xcolor}
 % maxwidth is the original width if it is less than linewidth
 % otherwise use linewidth (to make sure the graphics do not exceed the margin)
 \makeatletter
@@ -79,7 +79,8 @@
 \setlength{\parskip}{0.5\baselineskip}
 
 
-\title{\textbf{Data Analysis Practice}}
+\title{\textbf{Data Analysis Report:
+Annual FEMA Disaster Declarations}}
 \author{Michael V Cumbo}
 \date{\today}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -103,7 +104,7 @@
 \hlkwd{library}\hlstd{(forcats)}
 \hlkwd{library}\hlstd{(GGally)}
 \hlkwd{library}\hlstd{(stringr)}
-\hlkwd{library}\hlstd{(magrittr)}
+\htalkwd{library}\hlstd{(magrittr)}
 
 \hlkwd{setwd}\hlstd{(}\hlstr{"~/workbook"}\hlstd{)}
 \hlstd{con} \hlkwb{<-} \hlkwd{dbConnect}\hlstd{(RSQLite}\hlopt{::}\hlkwd{SQLite}\hlstd{(),} \hlstr{"Disaster_Data.db"}\hlstd{)}
