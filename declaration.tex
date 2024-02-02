@@ -157,7 +157,7 @@ ORDER BY declarationDate;"}
 \includegraphics[width=\maxwidth]{figure/histogram_disasters-1} 
 \end{knitrout}
 
-  \caption{histogram of the total number of disasters declared by the United States} 
+  \caption{Histogram of the total number of disasters declared by the United States} 
   \label{figure:1}
   \end{minipage}
 \end{figure}
@@ -205,31 +205,33 @@ ORDER BY declarationDate;"}
 
 \section*{Model Summary}
 The summary of the linear model offers key insights:
-
 \subsection*{Coefficients:}
 \begin{itemize}
     \item The intercept is $-49209.962$, implying the model's prediction for \textit{DisasterCount} when \textit{Year} is 0, which is not applicable in this context.
     \item The slope coefficient for \textit{Year} is $25.131$. This indicates an annual increase of approximately 25.131 in \textit{DisasterCount}, as per the model.
     \item These predictions indicate an upward trend in \textit{DisasterCount} over the years.
 \end{itemize}
-
 \subsection*{Statistical Significance:}
-Both the intercept and the slope demonstrate statistical significance with a p-value $< 0.001$.
-
+\begin{itemize}
+  \item Both the intercept and the slope demonstrate statistical significance with a p-value $< 0.001$.
+\end{itemize}
 \subsection*{Model Fit:}
 \begin{itemize}
     \item The R-squared value is $0.6156$, signifying that approximately 61.56\% of the variability in \textit{DisasterCount} is explained by the year. However, a significant portion of variability remains unexplained.
     \item The Residual Standard Error (RSE) is $409.4$, indicating the average deviation of data points from the fitted line.
 \end{itemize}
-
 \subsection*{Residuals:}
-The residuals range from $-714.57$ to $1361.83$, suggesting variability around the regression line.
-
+\begin{itemize}
+  \item The residuals range from $-714.57$ to $1361.83$, suggesting variability around the regression line.
+\end{itemize}
 \section*{Interpretation and Considerations}
 \begin{itemize}
+    \item The Biological factor and the years 2020, 2005, and 2024 where filtered out of linear model
     \item The model indicates a significant upward trend in disaster counts over the years.
     \item The presence of significant residuals and a R-squared value of $0.6156$ implies that, while there is a discernible trend, other unaccounted factors might also be influencing \textit{DisasterCount}.
     \item Predictions for future years should be approached with caution due to the simplicity of the model and its exclusion of other potential predictive factors.
     \item When interpreting these results and making future decisions, the limitations of a simple linear regression model and the impact of external factors not included in the model should be considered.
+    \item Severe Storms, Hurricanes, Floods, and Biological make up the majority of declared disasters.
+    \item Further analysis of the top 3 populated factors present in the Histogram should be considered.
 \end{itemize}
 \end{document}
