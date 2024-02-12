@@ -1,5 +1,5 @@
 
-\documentclass[12pt]{report}\usepackage[]{graphicx}\usepackage[]{xcolor}
+\documentclass[11pt]{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
 % maxwidth is the original width if it is less than linewidth
 % otherwise use linewidth (to make sure the graphics do not exceed the margin)
 \makeatletter
@@ -79,8 +79,7 @@
 \setlength{\parskip}{0.5\baselineskip}
 
 
-\title{\textbf{Data Analysis Report:
-Annual FEMA Disaster Declarations}}
+\title{\textbf{Data Analysis Practice}}
 \author{Michael V Cumbo}
 \date{\today}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -104,14 +103,15 @@ Annual FEMA Disaster Declarations}}
 \hlkwd{library}\hlstd{(forcats)}
 \hlkwd{library}\hlstd{(GGally)}
 \hlkwd{library}\hlstd{(stringr)}
-\htalkwd{library}\hlstd{(magrittr)}
+\hlkwd{library}\hlstd{(magrittr)}
 
 \hlkwd{setwd}\hlstd{(}\hlstr{"~/workbook"}\hlstd{)}
 \hlstd{con} \hlkwb{<-} \hlkwd{dbConnect}\hlstd{(RSQLite}\hlopt{::}\hlkwd{SQLite}\hlstd{(),} \hlstr{"Disaster_Data.db"}\hlstd{)}
 \hlkwd{dbListTables}\hlstd{(con)}
 \end{alltt}
 \begin{verbatim}
-## [1] "US_Declarations_2023"     "sqlean_define"           
+## [1] "US_Declarations_2023"    
+## [2] "sqlean_define"           
 ## [3] "us_disaster_declarations"
 \end{verbatim}
 \begin{alltt}
@@ -130,6 +130,7 @@ ORDER BY declarationDate;"}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
+
 
 \begin{figure}[h!]
 \centering
@@ -159,55 +160,51 @@ ORDER BY declarationDate;"}
 \includegraphics[width=\maxwidth]{figure/histogram_disasters-1} 
 \end{knitrout}
 
+
   \caption{histogram of the total number of disasters declared by the United States} 
   \label{figure:1}
   \end{minipage}
 \end{figure}
 
 \clearpage
-\section*{Linear Regression Model Summary}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##       1       2       3       4 
+## 1654.88 1680.01 1705.14 1730.27 
+##       5       6       7       8 
+## 1755.40 1780.53 1805.66 1830.79 
+##       9      10      11      12 
+## 1855.92 1881.05 1906.18 1931.32
+## 
+## Call:
+## lm(formula = DisasterCount ~ Year, data = annual_disasters)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q 
+## -714.57 -312.30  -49.99  177.93 
+##     Max 
+## 1361.83 
+## 
+## Coefficients:
+##               Estimate Std. Error
+## (Intercept) -49209.962   4821.925
+## Year            25.131      2.426
+##             t value Pr(>|t|)    
+## (Intercept)  -10.21 2.80e-15 ***
+## Year          10.36 1.51e-15 ***
+## ---
+## Signif. codes:  
+##   0 '***' 0.001 '**' 0.01 '*'
+##   0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 409.4 on 67 degrees of freedom
+## Multiple R-squared:  0.6156,	Adjusted R-squared:  0.6098 
+## F-statistic: 107.3 on 1 and 67 DF,  p-value: 1.514e-15
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
-\begin{center}
-\textbf{Residuals}
-\end{center}
-\begin{center}
-\begin{tabular}{lrrrrr}
-\toprule
-     & Min    & 1Q     & Median & 3Q     & Max    \\
-\midrule
-     & -714.57 & -312.30 & -49.99 & 177.93 & 1361.83 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\begin{center}
-\textbf{Coefficients}
-\end{center}
-\begin{center}
-\begin{tabular}{lrrrr}
-\toprule
-             & Estimate   & Std. Error & t value & Pr(>\textbar t\textbar) \\
-\midrule
-(Intercept)  & -49209.962 & 4821.925   & -10.21  & $2.80 \times 10^{-15}$ *** \\
-Year         & 25.131     & 2.426      & 10.36   & $1.51 \times 10^{-15}$ *** \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\begin{center}
-\textbf{Model Summary}
-\end{center}
-\begin{center}
-\begin{tabular}{lr}
-\toprule
-Residual standard error & 409.4 on 67 degrees of freedom \\
-Multiple R-squared      & 0.6156 \\
-Adjusted R-squared      & 0.6098 \\
-F-statistic             & 107.3 on 1 and 67 DF \\
-p-value                 & $1.514 \times 10^{-15}$ \\
-\bottomrule
-\end{tabular}
-\end{center}
 \begin{figure}[h!]
 \centering
   \begin{minipage}{.8\linewidth}
@@ -215,87 +212,37 @@ p-value                 & $1.514 \times 10^{-15}$ \\
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 \includegraphics[width=\maxwidth]{figure/plot_data_points-1} 
 \end{knitrout}
-  \caption{Simple Linear Rergression Model}
   \label{figure:2}
   \end{minipage}
 \end{figure}
 
-\begin{equation}
-    y = \beta_0 + \beta_1x + \epsilon
-\end{equation}
+\section*{Model Summary}
+The summary of the linear model offers key insights:
+
 \subsection*{Coefficients:}
 \begin{itemize}
     \item The intercept is $-49209.962$, implying the model's prediction for \textit{DisasterCount} when \textit{Year} is 0, which is not applicable in this context.
     \item The slope coefficient for \textit{Year} is $25.131$. This indicates an annual increase of approximately 25.131 in \textit{DisasterCount}, as per the model.
     \item These predictions indicate an upward trend in \textit{DisasterCount} over the years.
 \end{itemize}
+
 \subsection*{Statistical Significance:}
-\begin{itemize}
-  \item Both the intercept and the slope demonstrate statistical significance with a p-value $< 0.001$.
-\end{itemize}
+Both the intercept and the slope demonstrate statistical significance with a p-value $< 0.001$.
+
 \subsection*{Model Fit:}
 \begin{itemize}
     \item The R-squared value is $0.6156$, signifying that approximately 61.56\% of the variability in \textit{DisasterCount} is explained by the year. However, a significant portion of variability remains unexplained.
     \item The Residual Standard Error (RSE) is $409.4$, indicating the average deviation of data points from the fitted line.
 \end{itemize}
-\section{Insights}
+
+\subsection*{Residuals:}
+The residuals range from $-714.57$ to $1361.83$, suggesting variability around the regression line.
+
+\section*{Interpretation and Considerations}
 \begin{itemize}
-      \item The model(see Figure:\Figure~\ref{figure:2}.) indicates a significant upward trend in disaster counts over the years.
-
-      \item The presence of substantial residuals and an R-squared value of $0.6156$ implies that, while there is a discernible trend, other unaccounted factors might also influence \textit{Disaster Count^\Figure~\ref{figure:2}}.
-
-      \item Severe Storms, Hurricanes, Floods, and Biological make up the majority of declared disaster^\Figure~\ref{figure:1}.
-
-\end{itemize}
-\subsection*{Considerations}
-\begin{itemize}
-    \item The Biological factor and the years 2020, 2005, and 2024 were filtered out of the linear model due to being significant outliers within the data set.
+    \item The model indicates a significant upward trend in disaster counts over the years.
+    \item The presence of significant residuals and a R-squared value of $0.6156$ implies that, while there is a discernible trend, other unaccounted factors might also be influencing \textit{DisasterCount}.
     \item Predictions for future years should be approached with caution due to the simplicity of the model and its exclusion of other potential predictive factors.
     \item When interpreting these results and making future decisions, the limitations of a simple linear regression model and the impact of external factors not included in the model should be considered.
-    \item Further analysis of the top 3 populated factors present in the Histogram should be considered.
-\end{itemize}
-\subsection*{Analysis of Year-to-Year Change in Disaster Declarations}
-\begin{table}[ht]
-\centering
-\caption{Year-to-Year Change in number of Disaster Declarations by State}
-\label{tab:disaster_changes}
-\begin{tabular}{lrr}
-\toprule
-State & Year & YearToYearChange \\
-\midrule
-TX & 2005 & 693 \\
-ME & 2020 & 609 \\
-TX & 2020 & 567 \\
-LA & 2020 & 497 \\
-PR & 2020 & 351 \\
-TX & 2008 & 349 \\
-TX & 1998 & 315 \\
-GA & 2020 & 308 \\
-GA & 2017 & 266 \\
-AL & 2020 & 265 \\
-MS & 2020 & 263 \\
-OK & 2007 & 245 \\
-VA & 1996 & 227 \\
-LA & 2005 & 222 \\
-FL & 2004 & 220 \\
-MO & 2011 & 220 \\
-TX & 2011 & 215 \\
-KY & 2020 & 206 \\
-AR & 2020 & 204 \\
-FL & 2022 & 203 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\section{Insights}
-\begin{itemize}
-  \item \textbf{High Fluctuations in Certain Years:} The years 2020, 2005, and 2008 stand out with significant changes in disaster declarations. This could indicate major disaster events or an increased number of smaller events that cumulatively led to a higher count.
-  
-  \item \textbf{Significant Increases in Texas (TX):} Texas shows the highest year-to-year increase in 2005 with 693 additional declarations compared to the previous year. Texas appears multiple times, indicating its vulnerability to disasters or its large size and varied climate contributing to different types of disasters.
-  
-  \item \textbf{Impact of 2020:} The year 2020 was significant for many states, including Maine (ME), Texas (TX), Louisiana (LA), Puerto Rico (PR), Georgia (GA), Alabama (AL), Mississippi (MS), Kentucky (KY), and Arkansas (AR), suggesting widespread disaster events or enhanced reporting mechanisms. Given the global pandemic's timeline, it's interesting to note such a high number of disaster declarations, suggesting that other disaster types (e.g., hurricanes, wildfires) also had a significant impact.
-  
-  \item \textbf{Variability Among States:} The list includes a mix of states from different regions, indicating that disasters affect a wide range of areas across the United States. Coastal states like Florida (FL) and Louisiana (LA) are featured alongside inland states like Missouri (MO) and Kentucky (KY), reflecting the diverse nature of disasters (natural, technological, or human-made) across the country.
-  
 \end{itemize}
 \end{document}

@@ -93,16 +93,21 @@ declarations_2023$Day <- day(declarations_2023$Date)
 # DPLYR library than pass it to ggplot and build the graph
 # this reorders the factors in the
 # graph so its easier to break down and look at
- v1 <- declarations_2023 %>%
-  select("state", "incidentType", "Year") %>%
-  group_by(incidentType) %>%
-  summarise(n = n()) %>%
-  arrange(n) %>%
-  mutate(incidentType = factor(incidentType, levels = unique(incidentType))) %>%
-  ggplot(aes(x = incidentType, y = n)) +
+v1 <- declarations_2023 %>%
+  select(state, DisasterType = incidentType, Year) %>%
+  group_by(DisasterType) %>%
+  summarise(NumberOfDisasters = n()) %>%  
+  arrange(NumberOfDisasters) %>%
+  mutate(DisasterType =
+         factor(DisasterType,
+                levels = unique(DisasterType))) %>%
+  ggplot(aes(x = DisasterType, y = NumberOfDisasters)) +
   geom_col() +
   theme_gray() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5))
+  theme(axis.text.x = 
+        element_text(angle = 45, vjust = 0.5, hjust = .4)) +
+  labs(y = "Number of Disasters", x = "Disaster Type")
+
 print(v1)
 @
 
