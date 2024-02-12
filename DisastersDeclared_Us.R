@@ -76,6 +76,56 @@ annual_disasters %>%
 
 head(annual_disasters)
 
+
+# Assuming declarations_2023 is your dataset and it's already filtered
+# as per your previous operations (if not, include the filtering steps here)
+yearly_declarations <- declarations_2023 %>%
+  group_by(state, Year) %>%
+  summarise(DisasterCount = n(), .groups = "drop") %>%
+  arrange(state, Year)
+# Calculate year-to-year differences
+yearly_differences <- yearly_declarations %>%
+  group_by(state) %>%
+  mutate(YearToYearChange = DisasterCount - lag(DisasterCount)) %>%
+  select(state, Year, YearToYearChange)
+# To handle NAs for the first year of each state,
+# you might want to replace NA with 0 or keep as is
+yearly_differences <- yearly_differences %>%
+  arrange(desc(YearToYearChange))
+replace_na(list(YearToYearChange = 0))
+# View the tibble
+print(yearly_differences, n = 20)
+
+declarations_2023 %>%
+  filter(
+    !Year %in% c(2020, 2005, 2024),
+    incidentType != "Biological"
+  ) %>%
+  group_by(state) %>%
+  summarise(
+    DisasterCount = n()
+  ) %>%
+  arrange(desc(DisasterCount)) %>%
+  print(n = 20)
+
+declarations_2023 %>%
+  filter(
+    !Year %in% c(2020, 2005, 2024),
+    incidentType != "Biological"
+  ) %>%
+  group_by(state, Year) %>%
+  summarise(AnnualDisasterCount = n(), .groups = "drop") %>%
+  group_by(state) %>%
+  summarise(
+    MedianDisasterCount = median(AnnualDisasterCount),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(MedianDisasterCount)) %>%
+  print(n = 20)
+
+
+
+
 # Rotate and adjust the size of x-axis labels
 model_simple <- lm(DisasterCount ~ Year, data = annual_disasters)
 future_years <- tibble(Year = c(
@@ -83,6 +133,8 @@ future_years <- tibble(Year = c(
   2029, 2030, 2031, 2032, 2033, 2034, 2035
 ))
 predict(model_simple, future_years) %>% round(1)
+
+
 
 annual_disasters %>%
   lm(DisasterCount ~ Year, data = .) %>%
